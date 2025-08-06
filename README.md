@@ -37,15 +37,15 @@ A personalized AI-powered tutor that turns your notes and textbooks into instant
 
 ```mermaid
 graph TD
-    A[User Input (Text or Voice)] --> B[Prompt + Notes]
-    B --> C[Retrieval Engine (RAG)]
-    C --> D[LLM (GPT-4 with Function Calling)]
-    D --> E{Structured Output?}
-    E -->|Flashcards| F[Flashcard JSON]
-    E -->|Quiz| G[Quiz JSON]
-    E -->|Answer| H[Text Output]
-    D --> I[Call Reminder API]
-    F & G & H --> J[Frontend / API Response]
+    A["User Input (Text or Voice)"] --> B["Prompt + Notes"]
+    B --> C["Retrieval Engine (RAG)"]
+    C --> D["LLM (GPT-4 with Function Calling)"]
+    D --> E{"Structured Output?"}
+    E -->|Flashcards| F["Flashcard JSON"]
+    E -->|Quiz| G["Quiz JSON"]
+    E -->|Answer| H["Text Output"]
+    D --> I["Call Reminder API"]
+    F & G & H --> J["Frontend / API Response"]
 ```
 
 ---
