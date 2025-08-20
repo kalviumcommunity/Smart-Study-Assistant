@@ -1,0 +1,15 @@
+# Essential AI/ML Libraries (minimal for now)
+openai
+python-dotenv
+loguru
+pydantic
+requests
+numpy
+tiktoken
+
+# Document Processing
+PyPDF2
+python-docx
+
+# Testing
+pytest
