@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Environment variables
+.env
+config/.env
+config/.env.*
+
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Python tooling
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Data/Vector DB
+chroma/
+vector_store/
+tmp/
