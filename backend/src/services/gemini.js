@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import { ZeroShotPromptEngine } from "./zero-shot-prompting.js";
 import { OneShotPromptEngine } from "./one-shot-prompting.js";
+import { MultiShotPromptEngine } from "./multi-shot-prompting.js";
 
 dotenv.config();
 
@@ -11,13 +12,17 @@ const genAI = new GoogleGenAI({
 
 const zeroShotEngine = new ZeroShotPromptEngine();
 const oneShotEngine = new OneShotPromptEngine();
+const multiShotEngine = new MultiShotPromptEngine();
 
 export async function chatWithAI(userMessage, options = {}) {
   try {
     // Choose prompting strategy based on options
     let promptResult;
 
-    if (options.promptingStrategy === 'one-shot') {
+    if (options.promptingStrategy === 'multi-shot') {
+      // Use multi-shot prompting with multiple examples
+      promptResult = multiShotEngine.generatePrompt(userMessage, options);
+    } else if (options.promptingStrategy === 'one-shot') {
       // Use one-shot prompting with examples
       promptResult = oneShotEngine.generatePrompt(userMessage, options);
     } else {
@@ -67,9 +72,19 @@ export async function chatWithAI(userMessage, options = {}) {
   }
 }
 
+// Multi-shot prompting specific function
+export async function chatWithAIMultiShot(userMessage, options = {}) {
+  return chatWithAI(userMessage, { ...options, promptingStrategy: 'multi-shot' });
+}
+
 // One-shot prompting specific function
 export async function chatWithAIOneShot(userMessage, options = {}) {
   return chatWithAI(userMessage, { ...options, promptingStrategy: 'one-shot' });
+}
+
+// Zero-shot prompting specific function (explicit)
+export async function chatWithAIZeroShot(userMessage, options = {}) {
+  return chatWithAI(userMessage, { ...options, promptingStrategy: 'zero-shot' });
 }
 
 // Legacy function for backward compatibility
