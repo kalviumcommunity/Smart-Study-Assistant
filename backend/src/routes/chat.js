@@ -1,12 +1,14 @@
 import express from "express";
-import { chatWithAI, chatWithAIOneShot } from "../services/gemini.js";
+import { chatWithAI, chatWithAIOneShot, chatWithAIMultiShot } from "../services/gemini.js";
 import { chatWithAI as rtfcChatWithAI, chatWithAIDetailed } from "../services/rtfc-gemini.js";
 import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
 import { OneShotPromptEngine } from "../services/one-shot-prompting.js";
+import { MultiShotPromptEngine } from "../services/multi-shot-prompting.js";
 
 const router = express.Router();
 const zeroShotEngine = new ZeroShotPromptEngine();
 const oneShotEngine = new OneShotPromptEngine();
+const multiShotEngine = new MultiShotPromptEngine();
 
 // POST /chat - Standard chat with intelligent prompting
 router.post("/", async (req, res) => {
@@ -17,16 +19,19 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Support both zero-shot and one-shot prompting options
+    // Support zero-shot, one-shot, and multi-shot prompting options
     const promptOptions = {
       promptType: options.promptType,
       level: options.level,
       taskType: options.taskType,
+      maxExamples: options.maxExamples,
       promptingStrategy: options.promptingStrategy || 'zero-shot' // default to zero-shot
     };
 
     let response;
-    if (promptOptions.promptingStrategy === 'one-shot') {
+    if (promptOptions.promptingStrategy === 'multi-shot') {
+      response = await chatWithAIMultiShot(message, promptOptions);
+    } else if (promptOptions.promptingStrategy === 'one-shot') {
       response = await chatWithAIOneShot(message, promptOptions);
     } else {
       response = await chatWithAI(message, promptOptions);
@@ -232,7 +237,64 @@ router.post("/one-shot", async (req, res) => {
   }
 });
 
-// POST /chat/compare - Compare zero-shot vs one-shot responses
+// POST /chat/multi-shot - Multi-shot prompting with multiple examples
+router.post("/multi-shot", async (req, res) => {
+  try {
+    const { message, promptType, level, taskType, maxExamples, showExamples } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    const options = {};
+    if (promptType) options.promptType = promptType;
+    if (level) options.level = level;
+    if (maxExamples) options.maxExamples = maxExamples;
+
+    let finalMessage = message;
+    let promptAnalysis = null;
+
+    // Use task-specific prompting if specified
+    if (taskType) {
+      const taskPrompt = multiShotEngine.generateTaskSpecificPrompt(taskType, message, options);
+      finalMessage = taskPrompt.enhancedUserMessage;
+      promptAnalysis = {
+        originalMessage: message,
+        enhancedMessage: finalMessage,
+        analysisType: taskPrompt.analysisType,
+        confidence: taskPrompt.confidence,
+        taskType,
+        examples: showExamples ? taskPrompt.examples : null,
+        exampleCount: taskPrompt.exampleCount
+      };
+    } else {
+      // Regular multi-shot analysis
+      const analysis = multiShotEngine.generatePrompt(message, options);
+      promptAnalysis = {
+        originalMessage: message,
+        enhancedMessage: analysis.enhancedUserMessage,
+        analysisType: analysis.analysisType,
+        confidence: analysis.confidence,
+        examples: showExamples ? analysis.examples : null,
+        exampleCount: analysis.exampleCount
+      };
+    }
+
+    const response = await chatWithAIMultiShot(finalMessage, options);
+
+    res.json({
+      reply: response,
+      promptAnalysis,
+      options: { promptType, level, taskType, maxExamples },
+      promptingStrategy: 'multi-shot'
+    });
+  } catch (error) {
+    console.error("Error in /chat/multi-shot:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+// POST /chat/compare - Compare zero-shot vs one-shot vs multi-shot responses
 router.post("/compare", async (req, res) => {
   try {
     const { message, promptType, level } = req.body;
@@ -245,15 +307,17 @@ router.post("/compare", async (req, res) => {
     if (promptType) options.promptType = promptType;
     if (level) options.level = level;
 
-    // Get both responses
-    const [zeroShotResponse, oneShotResponse] = await Promise.all([
+    // Get all three responses
+    const [zeroShotResponse, oneShotResponse, multiShotResponse] = await Promise.all([
       chatWithAI(message, options),
-      chatWithAIOneShot(message, options)
+      chatWithAIOneShot(message, options),
+      chatWithAIMultiShot(message, { ...options, maxExamples: 3 })
     ]);
 
-    // Get analysis from both engines
+    // Get analysis from all engines
     const zeroShotAnalysis = zeroShotEngine.generatePrompt(message, options);
     const oneShotAnalysis = oneShotEngine.generatePrompt(message, options);
+    const multiShotAnalysis = multiShotEngine.generatePrompt(message, { ...options, maxExamples: 3 });
 
     res.json({
       message,
@@ -261,7 +325,8 @@ router.post("/compare", async (req, res) => {
         response: zeroShotResponse,
         analysis: {
           type: zeroShotAnalysis.analysisType,
-          confidence: zeroShotAnalysis.confidence
+          confidence: zeroShotAnalysis.confidence,
+          strategy: 'zero-shot'
         }
       },
       oneShot: {
@@ -269,7 +334,17 @@ router.post("/compare", async (req, res) => {
         analysis: {
           type: oneShotAnalysis.analysisType,
           confidence: oneShotAnalysis.confidence,
-          example: oneShotAnalysis.example
+          strategy: 'one-shot',
+          exampleCount: 1
+        }
+      },
+      multiShot: {
+        response: multiShotResponse,
+        analysis: {
+          type: multiShotAnalysis.analysisType,
+          confidence: multiShotAnalysis.confidence,
+          strategy: 'multi-shot',
+          exampleCount: multiShotAnalysis.exampleCount
         }
       },
       options
