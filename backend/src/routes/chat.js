@@ -1,20 +1,32 @@
 import express from "express";
 import { chatWithAI } from "../services/gemini.js";
 import { chatWithAI as rtfcChatWithAI, chatWithAIDetailed } from "../services/rtfc-gemini.js";
+import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
 
 const router = express.Router();
+const zeroShotEngine = new ZeroShotPromptEngine();
 
-// POST /chat - Standard chat
+// POST /chat - Standard chat with zero-shot prompting
 router.post("/", async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, options = {} } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    const response = await chatWithAI(message);
-    res.json({ reply: response });
+    // Support zero-shot prompting options
+    const zeroShotOptions = {
+      promptType: options.promptType,
+      level: options.level,
+      taskType: options.taskType
+    };
+
+    const response = await chatWithAI(message, zeroShotOptions);
+    res.json({
+      reply: response,
+      options: zeroShotOptions
+    });
   } catch (error) {
     console.error("Error in /chat:", error);
     res.status(500).json({ error: "Something went wrong" });
@@ -44,6 +56,115 @@ router.post("/rtfc", async (req, res) => {
     }
   } catch (error) {
     console.error("Error in /chat/rtfc:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+// POST /chat/zero-shot - Zero-shot prompting with detailed options
+router.post("/zero-shot", async (req, res) => {
+  try {
+    const { message, promptType, level, taskType } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    const options = {};
+    if (promptType) options.promptType = promptType;
+    if (level) options.level = level;
+
+    let finalMessage = message;
+    let promptAnalysis = null;
+
+    // Use task-specific prompting if specified
+    if (taskType) {
+      const taskPrompt = zeroShotEngine.generateTaskSpecificPrompt(taskType, message, options);
+      finalMessage = taskPrompt.enhancedUserMessage;
+      promptAnalysis = {
+        originalMessage: message,
+        enhancedMessage: finalMessage,
+        analysisType: taskPrompt.analysisType,
+        confidence: taskPrompt.confidence,
+        taskType
+      };
+    } else {
+      // Regular zero-shot analysis
+      const analysis = zeroShotEngine.generatePrompt(message, options);
+      promptAnalysis = {
+        originalMessage: message,
+        enhancedMessage: analysis.enhancedUserMessage,
+        analysisType: analysis.analysisType,
+        confidence: analysis.confidence
+      };
+    }
+
+    const response = await chatWithAI(finalMessage, options);
+
+    res.json({
+      reply: response,
+      promptAnalysis,
+      options: { promptType, level, taskType }
+    });
+  } catch (error) {
+    console.error("Error in /chat/zero-shot:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+// GET /chat/types - Get available prompt types and options
+router.get("/types", (req, res) => {
+  try {
+    const availableTypes = zeroShotEngine.getAvailableTypes();
+
+    res.json({
+      promptTypes: availableTypes,
+      taskTypes: [
+        "explanation",
+        "problem_solving",
+        "analysis",
+        "comparison",
+        "summary",
+        "tutorial",
+        "research",
+        "creative"
+      ],
+      levels: [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ]
+    });
+  } catch (error) {
+    console.error("Error in /chat/types:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+// POST /chat/analyze - Analyze a message without generating response
+router.post("/analyze", (req, res) => {
+  try {
+    const { message, promptType, level } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    const options = {};
+    if (promptType) options.promptType = promptType;
+    if (level) options.level = level;
+
+    const analysis = zeroShotEngine.generatePrompt(message, options);
+
+    res.json({
+      originalMessage: message,
+      enhancedMessage: analysis.enhancedUserMessage,
+      analysisType: analysis.analysisType,
+      confidence: analysis.confidence,
+      systemPrompt: analysis.systemPrompt.substring(0, 200) + "...", // Truncated for response
+      options
+    });
+  } catch (error) {
+    console.error("Error in /chat/analyze:", error);
     res.status(500).json({ error: "Something went wrong" });
   }
 });

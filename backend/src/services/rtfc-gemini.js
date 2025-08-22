@@ -1,10 +1,12 @@
 import RTFCFramework from '../frameworks/rtfc.js';
+import { ZeroShotPromptEngine } from './zero-shot-prompting.js';
 import dotenv from "dotenv";
 
 dotenv.config();
 
-// Initialize RTFC Framework
+// Initialize RTFC Framework and Zero-Shot Engine
 const rtfcFramework = new RTFCFramework();
+const zeroShotEngine = new ZeroShotPromptEngine();
 
 // Load initial knowledge base
 await initializeKnowledgeBase();

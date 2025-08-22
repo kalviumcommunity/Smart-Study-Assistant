@@ -1,8 +1,8 @@
-# 🧠 Smart Study Assistant — AI Tutor with RAG & Function Calling
+# 🧠 Smart Study Assistant — AI Tutor with Zero-Shot Prompting, RAG & Function Calling
 
-A personalized AI-powered tutor that turns your notes and textbooks into instant answers, flashcards, quizzes, and summaries. Built using **Retrieval-Augmented Generation (RAG)**, **Function Calling**, and **Structured Output**, this assistant helps students **study smarter** by leveraging the power of Generative AI.
+A personalized AI-powered tutor that intelligently adapts to any question using **Zero-Shot Prompting**, **Retrieval-Augmented Generation (RAG)**, and **Function Calling**. This assistant helps students **study smarter** by automatically optimizing AI responses for different subjects and learning contexts.
 
-> ✨ Built for BTech prep, competitive exams, and lifelong learners.
+> ✨ Built for BTech prep, competitive exams, and lifelong learners with intelligent prompt adaptation.
 
 ---
 
@@ -10,12 +10,13 @@ A personalized AI-powered tutor that turns your notes and textbooks into instant
 
 | Feature                       | Description                                                                 |
 |------------------------------|-----------------------------------------------------------------------------|
+| 🎯 **Zero-Shot Prompting**        | Automatically detects question type (math, science, history, etc.) and optimizes AI responses accordingly. |
 | 🔍 **Question Answering (RAG)**     | Ask questions from uploaded notes or PDFs. Get AI-generated answers grounded in source content. |
 | 🧾 **Summarization**              | Upload documents and get key-point summaries for revision.                |
 | 🎓 **Flashcard Generator**        | Auto-generate Q&A flashcards for active recall and spaced repetition.     |
 | 📋 **Quiz Generator (MCQs)**      | Convert study material into quizzes with correct options and distractors. |
 | ⏰ **Reminder Scheduler**         | Schedule study sessions or revision reminders using natural language.     |
-| 🧠 **Role-Based Prompting**       | Prompts designed to act like a helpful, exam-focused tutor.               |
+| 🧠 **Adaptive Prompting**         | Subject-specific prompts with difficulty levels (beginner/intermediate/advanced). |
 
 ---
 
@@ -67,6 +68,18 @@ graph TD
 ### 🔹 Quiz Generation
 ```txt
 "Create a quiz with 5 MCQs from the chapter on Semiconductor Devices."
+```
+
+### 🔹 Zero-Shot Prompting (NEW!)
+```txt
+# Automatic subject detection and optimization
+"Solve 2x + 5 = 15"  # → Detects math, shows step-by-step solution
+"What is photosynthesis?"  # → Detects science, provides detailed explanation with examples
+"When did World War I start?"  # → Detects history, gives chronological context
+
+# Manual control with options
+node zero-shot.js --type math --level beginner "Explain derivatives"
+node zero-shot.js --task tutorial "How to solve quadratic equations"
 ```
 
 ### 🔹 Reminder Scheduling (Function Calling)
@@ -154,6 +167,47 @@ Use Postman or frontend UI to upload a file and ask questions.
   "reminder": "Revise DSA on weekends",
   "time": "Saturday 6 PM"
 }
+```
+
+---
+
+## 🚀 Quick Start - Zero-Shot Prompting
+
+### Command Line Usage
+```bash
+# Navigate to backend directory
+cd backend
+
+# Basic usage (automatic detection)
+node zero-shot.js "What is photosynthesis?"
+node zero-shot.js "Solve 3x + 7 = 22"
+
+# With specific options
+node zero-shot.js --type math --level beginner "Explain calculus"
+node zero-shot.js --task tutorial "How to write Python functions"
+
+# See all available options
+node zero-shot.js --types
+node zero-shot.js --help
+
+# Run demonstration
+node demo-zero-shot.js
+```
+
+### API Usage
+```bash
+# Standard chat with zero-shot prompting
+curl -X POST http://localhost:3000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Solve 2x + 5 = 15", "options": {"promptType": "math"}}'
+
+# Advanced zero-shot endpoint
+curl -X POST http://localhost:3000/chat/zero-shot \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Explain machine learning", "promptType": "programming", "level": "intermediate"}'
+
+# Get available prompt types
+curl http://localhost:3000/chat/types
 ```
 
 ---

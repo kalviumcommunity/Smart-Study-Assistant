@@ -4,6 +4,7 @@
  */
 
 import { GoogleGenAI } from "@google/genai";
+import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
 import dotenv from "dotenv";
 import fs from 'fs/promises';
 import path from 'path';
@@ -15,13 +16,16 @@ class RTFCFramework {
     this.genAI = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     });
-    
+
     // Knowledge base for retrieval
     this.knowledgeBase = new Map();
-    
+
     // Available tools/functions
     this.tools = new Map();
-    
+
+    // Zero-shot prompting engine
+    this.zeroShotEngine = new ZeroShotPromptEngine();
+
     // Initialize built-in tools
     this.initializeTools();
   }
@@ -243,38 +247,47 @@ class RTFCFramework {
   }
 
   /**
-   * Generate enhanced response using all available information
+   * Generate enhanced response using all available information with zero-shot prompting
    */
   async generateEnhancedResponse(userMessage, toolResults, retrievedKnowledge, options) {
-    let systemPrompt = "You are a helpful study assistant with access to tools and knowledge base. ";
-    
+    // Generate zero-shot prompt based on the user message
+    const zeroShotPrompt = this.zeroShotEngine.generatePrompt(userMessage, options);
+
+    // Enhance the system prompt with RTFC context
+    let enhancedSystemPrompt = zeroShotPrompt.systemPrompt;
+
+    // Add RTFC-specific context
+    enhancedSystemPrompt += "\n\nYou have access to tools and a knowledge base to enhance your responses:";
+
     // Add tool results to context
     if (toolResults.length > 0) {
-      systemPrompt += "Tool results: ";
+      enhancedSystemPrompt += "\n\nTool Results Available:";
       toolResults.forEach(result => {
         if (result.success) {
-          systemPrompt += `${result.tool}: ${result.result}. `;
+          enhancedSystemPrompt += `\n- ${result.tool}: ${result.result}`;
+        } else {
+          enhancedSystemPrompt += `\n- ${result.tool}: Error - ${result.error}`;
         }
       });
     }
 
     // Add retrieved knowledge to context
     if (retrievedKnowledge.length > 0) {
-      systemPrompt += "Relevant knowledge: ";
+      enhancedSystemPrompt += "\n\nRelevant Knowledge Base Information:";
       retrievedKnowledge.forEach(knowledge => {
-        systemPrompt += `${knowledge.topic}: ${knowledge.content}. `;
+        enhancedSystemPrompt += `\n- ${knowledge.topic}: ${knowledge.content}`;
       });
     }
 
-    systemPrompt += "Provide clear, concise, and well-formatted responses. Use the tool results and knowledge to enhance your answer.";
+    enhancedSystemPrompt += "\n\nUse this additional information to provide a comprehensive, accurate response. Integrate the tool results and knowledge naturally into your answer.";
 
     const response = await this.genAI.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
         {
           parts: [
-            { text: systemPrompt },
-            { text: userMessage }
+            { text: enhancedSystemPrompt },
+            { text: zeroShotPrompt.enhancedUserMessage }
           ]
         }
       ],

@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { ZeroShotPromptEngine } from "./zero-shot-prompting.js";
 
 dotenv.config();
 
@@ -7,15 +8,20 @@ const genAI = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-export async function chatWithAI(userMessage) {
+const zeroShotEngine = new ZeroShotPromptEngine();
+
+export async function chatWithAI(userMessage, options = {}) {
   try {
+    // Generate zero-shot prompt based on the user message
+    const { systemPrompt, enhancedUserMessage } = zeroShotEngine.generatePrompt(userMessage, options);
+
     const response = await genAI.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
         {
           parts: [
-            { text: "You are a helpful study assistant. Provide clear, concise, and well-formatted responses. Use simple formatting and avoid excessive markdown. Keep explanations friendly but not overly verbose." },
-            { text: userMessage }
+            { text: systemPrompt },
+            { text: enhancedUserMessage }
           ]
         }
       ],
@@ -43,6 +49,33 @@ export async function chatWithAI(userMessage) {
       .trim();
 
     return cleanText;
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    throw error;
+  }
+}
+
+// Legacy function for backward compatibility
+export async function chatWithAIBasic(userMessage) {
+  try {
+    const response = await genAI.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          parts: [
+            { text: "You are a helpful study assistant. Provide clear, concise, and well-formatted responses. Use simple formatting and avoid excessive markdown. Keep explanations friendly but not overly verbose." },
+            { text: userMessage }
+          ]
+        }
+      ],
+      config: {
+        thinkingConfig: {
+          thinkingBudget: 0,
+        },
+      },
+    });
+
+    return response.text.trim();
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw error;
