@@ -5,6 +5,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
+import { OneShotPromptEngine } from "../services/one-shot-prompting.js";
 import dotenv from "dotenv";
 import fs from 'fs/promises';
 import path from 'path';
@@ -23,8 +24,9 @@ class RTFCFramework {
     // Available tools/functions
     this.tools = new Map();
 
-    // Zero-shot prompting engine
+    // Prompting engines
     this.zeroShotEngine = new ZeroShotPromptEngine();
+    this.oneShotEngine = new OneShotPromptEngine();
 
     // Initialize built-in tools
     this.initializeTools();
@@ -247,14 +249,22 @@ class RTFCFramework {
   }
 
   /**
-   * Generate enhanced response using all available information with zero-shot prompting
+   * Generate enhanced response using all available information with intelligent prompting
    */
   async generateEnhancedResponse(userMessage, toolResults, retrievedKnowledge, options) {
-    // Generate zero-shot prompt based on the user message
-    const zeroShotPrompt = this.zeroShotEngine.generatePrompt(userMessage, options);
+    // Choose prompting strategy based on options
+    let promptResult;
+
+    if (options.promptingStrategy === 'one-shot') {
+      // Use one-shot prompting with examples
+      promptResult = this.oneShotEngine.generatePrompt(userMessage, options);
+    } else {
+      // Default to zero-shot prompting
+      promptResult = this.zeroShotEngine.generatePrompt(userMessage, options);
+    }
 
     // Enhance the system prompt with RTFC context
-    let enhancedSystemPrompt = zeroShotPrompt.systemPrompt;
+    let enhancedSystemPrompt = promptResult.systemPrompt;
 
     // Add RTFC-specific context
     enhancedSystemPrompt += "\n\nYou have access to tools and a knowledge base to enhance your responses:";
@@ -287,7 +297,7 @@ class RTFCFramework {
         {
           parts: [
             { text: enhancedSystemPrompt },
-            { text: zeroShotPrompt.enhancedUserMessage }
+            { text: promptResult.enhancedUserMessage }
           ]
         }
       ],

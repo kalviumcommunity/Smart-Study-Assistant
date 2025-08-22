@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import { ZeroShotPromptEngine } from "./zero-shot-prompting.js";
+import { OneShotPromptEngine } from "./one-shot-prompting.js";
 
 dotenv.config();
 
@@ -9,11 +10,22 @@ const genAI = new GoogleGenAI({
 });
 
 const zeroShotEngine = new ZeroShotPromptEngine();
+const oneShotEngine = new OneShotPromptEngine();
 
 export async function chatWithAI(userMessage, options = {}) {
   try {
-    // Generate zero-shot prompt based on the user message
-    const { systemPrompt, enhancedUserMessage } = zeroShotEngine.generatePrompt(userMessage, options);
+    // Choose prompting strategy based on options
+    let promptResult;
+
+    if (options.promptingStrategy === 'one-shot') {
+      // Use one-shot prompting with examples
+      promptResult = oneShotEngine.generatePrompt(userMessage, options);
+    } else {
+      // Default to zero-shot prompting
+      promptResult = zeroShotEngine.generatePrompt(userMessage, options);
+    }
+
+    const { systemPrompt, enhancedUserMessage } = promptResult;
 
     const response = await genAI.models.generateContent({
       model: "gemini-2.5-flash",
@@ -53,6 +65,11 @@ export async function chatWithAI(userMessage, options = {}) {
     console.error("Gemini API Error:", error);
     throw error;
   }
+}
+
+// One-shot prompting specific function
+export async function chatWithAIOneShot(userMessage, options = {}) {
+  return chatWithAI(userMessage, { ...options, promptingStrategy: 'one-shot' });
 }
 
 // Legacy function for backward compatibility
