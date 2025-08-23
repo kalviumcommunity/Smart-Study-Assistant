@@ -1,0 +1,199 @@
+{
+  "metadata": {
+    "timestamp": "2025-08-23T06:28:36.960Z",
+    "total_tests": 1,
+    "successful_tests": 1,
+    "evaluated_tests": 1,
+    "evaluation_version": "1.0"
+  },
+  "aggregate_stats": {
+    "total_evaluations": 1,
+    "valid_evaluations": 1,
+    "error_rate": 0,
+    "average_scores": {
+      "overall": 9.3,
+      "accuracy": 10,
+      "completeness": 9,
+      "clarity": 10,
+      "methodology": 9,
+      "educational_value": 9
+    },
+    "grade_distribution": {
+      "A": 1,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "F": 0
+    },
+    "common_strengths": [],
+    "common_weaknesses": [],
+    "by_subject": {
+      "math": {
+        "count": 1,
+        "average_score": 9.3,
+        "evaluations": [
+          {
+            "overall_score": 9.3,
+            "dimension_scores": {
+              "accuracy": 10,
+              "completeness": 9,
+              "clarity": 10,
+              "methodology": 9,
+              "educational_value": 9
+            },
+            "strengths": [
+              "Provides both factoring and quadratic formula methods, demonstrating versatility.",
+              "Breaks down each method into clear, logical steps.",
+              "Shows all calculations explicitly and accurately.",
+              "Explains the reasoning behind each step, such as finding numbers for factoring and how the quadratic formula works.",
+              "Includes a thorough verification of both solutions for both methods.",
+              "Uses proper mathematical notation.",
+              "The 'Understanding the Problem' section provides good context.",
+              "The 'Final Answer' is clearly stated."
+            ],
+            "weaknesses": [
+              "The structure for 'Method 1: Factoring' could start immediately with steps rather than 'Step 2.1', 'Step 2.2', etc., as the initial 'Understanding the Problem' serves as a general introduction. The numbering is slightly off (e.g., 'Step 2.1' instead of 'Step 1')."
+            ],
+            "missing_elements": [
+              "The expected answer reference specifically listed verification as a distinct final step, whereas the model integrated it after showing both methods. While present, its placement could be debated based on strict interpretation of the reference."
+            ],
+            "factual_errors": [],
+            "improvement_suggestions": [
+              "Adjust the numbering of steps to be more sequential (e.g., Step 1, Step 2 for the factoring method, then a new sequence for the quadratic formula method) to avoid 'Step 2.1' for the first method.",
+              "While excellent, the response could slightly condense some introductory remarks to maintain a 'thorough but concise' balance, although its current verbosity is still highly educational."
+            ],
+            "meets_criteria": {
+              "accuracy": true,
+              "completeness": true,
+              "clarity": true,
+              "methodology": true
+            },
+            "grade": "A",
+            "summary": "The model provided an exceptionally thorough and accurate response. It not only solved the quadratic equation correctly using two different methods (factoring and quadratic formula) but also explained each step with great detail and clarity. The inclusion of a verification step for both solutions further enhanced its educational value. The step-by-step breakdown, clear calculations, and reasoning behind each action make this an excellent resource for a student. The only minor critique is the step numbering, which is a very minor stylistic point.",
+            "metadata": {
+              "test_case_id": "math_001",
+              "subject": "math",
+              "strategy": "zero-shot",
+              "timestamp": "2025-08-23T06:28:35.445Z",
+              "judge_version": "1.0"
+            },
+            "test_metadata": {
+              "response_time": 6460,
+              "timestamp": "2025-08-23T06:28:30.893Z"
+            }
+          }
+        ]
+      }
+    },
+    "by_strategy": {
+      "zero-shot": {
+        "count": 1,
+        "average_score": 9.3,
+        "evaluations": [
+          {
+            "overall_score": 9.3,
+            "dimension_scores": {
+              "accuracy": 10,
+              "completeness": 9,
+              "clarity": 10,
+              "methodology": 9,
+              "educational_value": 9
+            },
+            "strengths": [
+              "Provides both factoring and quadratic formula methods, demonstrating versatility.",
+              "Breaks down each method into clear, logical steps.",
+              "Shows all calculations explicitly and accurately.",
+              "Explains the reasoning behind each step, such as finding numbers for factoring and how the quadratic formula works.",
+              "Includes a thorough verification of both solutions for both methods.",
+              "Uses proper mathematical notation.",
+              "The 'Understanding the Problem' section provides good context.",
+              "The 'Final Answer' is clearly stated."
+            ],
+            "weaknesses": [
+              "The structure for 'Method 1: Factoring' could start immediately with steps rather than 'Step 2.1', 'Step 2.2', etc., as the initial 'Understanding the Problem' serves as a general introduction. The numbering is slightly off (e.g., 'Step 2.1' instead of 'Step 1')."
+            ],
+            "missing_elements": [
+              "The expected answer reference specifically listed verification as a distinct final step, whereas the model integrated it after showing both methods. While present, its placement could be debated based on strict interpretation of the reference."
+            ],
+            "factual_errors": [],
+            "improvement_suggestions": [
+              "Adjust the numbering of steps to be more sequential (e.g., Step 1, Step 2 for the factoring method, then a new sequence for the quadratic formula method) to avoid 'Step 2.1' for the first method.",
+              "While excellent, the response could slightly condense some introductory remarks to maintain a 'thorough but concise' balance, although its current verbosity is still highly educational."
+            ],
+            "meets_criteria": {
+              "accuracy": true,
+              "completeness": true,
+              "clarity": true,
+              "methodology": true
+            },
+            "grade": "A",
+            "summary": "The model provided an exceptionally thorough and accurate response. It not only solved the quadratic equation correctly using two different methods (factoring and quadratic formula) but also explained each step with great detail and clarity. The inclusion of a verification step for both solutions further enhanced its educational value. The step-by-step breakdown, clear calculations, and reasoning behind each action make this an excellent resource for a student. The only minor critique is the step numbering, which is a very minor stylistic point.",
+            "metadata": {
+              "test_case_id": "math_001",
+              "subject": "math",
+              "strategy": "zero-shot",
+              "timestamp": "2025-08-23T06:28:35.445Z",
+              "judge_version": "1.0"
+            },
+            "test_metadata": {
+              "response_time": 6460,
+              "timestamp": "2025-08-23T06:28:30.893Z"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "individual_evaluations": [
+    {
+      "overall_score": 9.3,
+      "dimension_scores": {
+        "accuracy": 10,
+        "completeness": 9,
+        "clarity": 10,
+        "methodology": 9,
+        "educational_value": 9
+      },
+      "strengths": [
+        "Provides both factoring and quadratic formula methods, demonstrating versatility.",
+        "Breaks down each method into clear, logical steps.",
+        "Shows all calculations explicitly and accurately.",
+        "Explains the reasoning behind each step, such as finding numbers for factoring and how the quadratic formula works.",
+        "Includes a thorough verification of both solutions for both methods.",
+        "Uses proper mathematical notation.",
+        "The 'Understanding the Problem' section provides good context.",
+        "The 'Final Answer' is clearly stated."
+      ],
+      "weaknesses": [
+        "The structure for 'Method 1: Factoring' could start immediately with steps rather than 'Step 2.1', 'Step 2.2', etc., as the initial 'Understanding the Problem' serves as a general introduction. The numbering is slightly off (e.g., 'Step 2.1' instead of 'Step 1')."
+      ],
+      "missing_elements": [
+        "The expected answer reference specifically listed verification as a distinct final step, whereas the model integrated it after showing both methods. While present, its placement could be debated based on strict interpretation of the reference."
+      ],
+      "factual_errors": [],
+      "improvement_suggestions": [
+        "Adjust the numbering of steps to be more sequential (e.g., Step 1, Step 2 for the factoring method, then a new sequence for the quadratic formula method) to avoid 'Step 2.1' for the first method.",
+        "While excellent, the response could slightly condense some introductory remarks to maintain a 'thorough but concise' balance, although its current verbosity is still highly educational."
+      ],
+      "meets_criteria": {
+        "accuracy": true,
+        "completeness": true,
+        "clarity": true,
+        "methodology": true
+      },
+      "grade": "A",
+      "summary": "The model provided an exceptionally thorough and accurate response. It not only solved the quadratic equation correctly using two different methods (factoring and quadratic formula) but also explained each step with great detail and clarity. The inclusion of a verification step for both solutions further enhanced its educational value. The step-by-step breakdown, clear calculations, and reasoning behind each action make this an excellent resource for a student. The only minor critique is the step numbering, which is a very minor stylistic point.",
+      "metadata": {
+        "test_case_id": "math_001",
+        "subject": "math",
+        "strategy": "zero-shot",
+        "timestamp": "2025-08-23T06:28:35.445Z",
+        "judge_version": "1.0"
+      },
+      "test_metadata": {
+        "response_time": 6460,
+        "timestamp": "2025-08-23T06:28:30.893Z"
+      }
+    }
+  ]
+}

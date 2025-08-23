@@ -1,0 +1,36 @@
+[
+  {
+    "testCase": {
+      "id": "math_001",
+      "subject": "math",
+      "difficulty": "intermediate",
+      "question": "Solve the quadratic equation: x² - 5x + 6 = 0",
+      "expected_answer": {
+        "solution": "x = 2 or x = 3",
+        "method": "factoring",
+        "steps": [
+          "Factor the quadratic: (x - 2)(x - 3) = 0",
+          "Set each factor to zero: x - 2 = 0 or x - 3 = 0",
+          "Solve: x = 2 or x = 3",
+          "Verify by substitution"
+        ]
+      },
+      "evaluation_criteria": {
+        "accuracy": "Must provide correct solutions x = 2 and x = 3",
+        "method": "Should show factoring or quadratic formula approach",
+        "steps": "Must show step-by-step solution process",
+        "verification": "Should verify the answer by substitution"
+      },
+      "tags": [
+        "algebra",
+        "quadratic",
+        "factoring"
+      ]
+    },
+    "strategy": "zero-shot",
+    "modelResponse": "Let's solve the quadratic equation $x^2 - 5x + 6 = 0$.\nUnderstanding the Problem\nWe are asked to solve a quadratic equation. A quadratic equation is an equation of the form $ax^2 + bx + c = 0$, where $a$, $b$, and $c$ are constants and $a \\neq 0$. In our case, $a=1$, $b=-5$, and $c=6$. There are several methods to solve quadratic equations, including factoring, using the quadratic formula, or completing the square. For this problem, we will demonstrate the factoring method and the quadratic formula method.\nMethod 1: Factoring\nThe factoring method involves expressing the quadratic trinomial as a product of two linear factors. To do this, we look for two numbers that multiply to $c$ and add up to $b$.\nStep 2.1: Identify coefficients\nIn the equation $x^2 - 5x + 6 = 0$, we have:\n$a = 1$\n$b = -5$\n$c = 6$\nStep 2.2: Find two numbers\nWe need to find two numbers that multiply to $c=6$ and add up to $b=-5$.\nLet's list the pairs of integers that multiply to 6:\n$1 \\times 6 = 6$\n$2 \\times 3 = 6$\n$(-1) \\times (-6) = 6$\n$(-2) \\times (-3) = 6$\nNow, let's check which pair sums to $-5$:\n$1 + 6 = 7$\n$2 + 3 = 5$\n$(-1) + (-6) = -7$\n$(-2) + (-3) = -5$\nThe two numbers are $-2$ and $-3$.\nStep 2.3: Factor the quadratic expression\nSince we found the numbers $-2$ and $-3$, we can factor the quadratic expression as:\n$(x - 2)(x - 3) = 0$\nStep 2.4: Solve for x\nFor the product of two factors to be zero, at least one of the factors must be zero.\nSo, we set each factor equal to zero:\n$x - 2 = 0 \\quad$ or $\\quad x - 3 = 0$\nSolving for $x$ in each equation:\n$x = 2$\n$x = 3$\nMethod 2: Quadratic Formula\nThe quadratic formula is a general method that works for any quadratic equation. The formula states that for an equation $ax^2 + bx + c = 0$, the solutions for $x$ are given by:\n$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\nStep 3.1: Identify coefficients\nFrom the equation $x^2 - 5x + 6 = 0$:\n$a = 1$\n$b = -5$\n$c = 6$\nStep 3.2: Substitute values into the quadratic formula\n$x = \\frac{-(-5) \\pm \\sqrt{(-5)^2 - 4(1)(6)}}{2(1)}$\nStep 3.3: Simplify the expression\nFirst, simplify the terms inside the square root (the discriminant):\n$(-5)^2 = 25$\n$4(1)(6) = 24$\nSo, the discriminant is $25 - 24 = 1$.\nNow, substitute this back into the formula:\n$x = \\frac{5 \\pm \\sqrt{1}}{2}$\nStep 3.4: Calculate the square root\n$\\sqrt{1} = 1$\nStep 3.5: Find the two solutions for x\n$x = \\frac{5 \\pm 1}{2}$\nThis gives us two possible solutions:\n$x_1 = \\frac{5 + 1}{2}$\n$x_2 = \\frac{5 - 1}{2}$\nCalculate each solution:\n$x_1 = \\frac{6}{2} = 3$\n$x_2 = \\frac{4}{2} = 2$\nVerification of the Solution\nTo verify the solutions, substitute each value of $x$ back into the original equation $x^2 - 5x + 6 = 0$.\nFor $x = 2$:\n$(2)^2 - 5(2) + 6 = 0$\n$4 - 10 + 6 = 0$\n$-6 + 6 = 0$\n$0 = 0$\nThis solution is correct.\nFor $x = 3$:\n$(3)^2 - 5(3) + 6 = 0$\n$9 - 15 + 6 = 0$\n$-6 + 6 = 0$\n$0 = 0$\nThis solution is correct.\nFinal Answer\nThe solutions to the quadratic equation $x^2 - 5x + 6 = 0$ are $x=2$ and $x=3$.",
+    "responseTime": 6460,
+    "timestamp": "2025-08-23T06:28:30.893Z",
+    "success": true
+  }
+]

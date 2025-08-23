@@ -4,6 +4,7 @@ import { ZeroShotPromptEngine } from "./zero-shot-prompting.js";
 import { OneShotPromptEngine } from "./one-shot-prompting.js";
 import { MultiShotPromptEngine } from "./multi-shot-prompting.js";
 import { ChainOfThoughtPromptEngine } from "./chain-of-thought-prompting.js";
+import { logTokenUsage } from "../utils/token-tracker.js";
 
 dotenv.config();
 
@@ -52,6 +53,14 @@ export async function chatWithAI(userMessage, options = {}) {
           thinkingBudget: 0, // Disable thinking for faster responses
         },
       },
+    });
+
+    // Log token usage information with enhanced tracking
+    const strategy = options.promptingStrategy || 'zero-shot';
+    logTokenUsage('Gemini Service', response.usageMetadata, {
+      strategy: strategy,
+      subject: options.promptType,
+      level: options.level
     });
 
     // Clean up the response text for better readability
@@ -115,6 +124,12 @@ export async function chatWithAIBasic(userMessage) {
           thinkingBudget: 0,
         },
       },
+    });
+
+    // Log token usage information with enhanced tracking
+    logTokenUsage('Gemini Basic', response.usageMetadata, {
+      strategy: 'basic',
+      context: 'legacy'
     });
 
     return response.text.trim();

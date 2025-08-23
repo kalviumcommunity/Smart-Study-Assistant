@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { chatWithAI } from "./src/services/gemini.js";
 import { ChainOfThoughtPromptEngine } from "./src/services/chain-of-thought-prompting.js";
+import { printTokenSummary } from "./src/utils/token-tracker.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -203,7 +204,11 @@ try {
   console.log("🧠 Chain of Thought Response:");
   console.log("=".repeat(40));
   console.log(answer);
-  
+
+  // Print token usage summary
+  console.log();
+  printTokenSummary();
+
 } catch (error) {
   console.error("❌ Error:", error.message);
   
