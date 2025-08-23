@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { ZeroShotPromptEngine } from "./zero-shot-prompting.js";
 import { OneShotPromptEngine } from "./one-shot-prompting.js";
 import { MultiShotPromptEngine } from "./multi-shot-prompting.js";
+import { ChainOfThoughtPromptEngine } from "./chain-of-thought-prompting.js";
 
 dotenv.config();
 
@@ -13,13 +14,17 @@ const genAI = new GoogleGenAI({
 const zeroShotEngine = new ZeroShotPromptEngine();
 const oneShotEngine = new OneShotPromptEngine();
 const multiShotEngine = new MultiShotPromptEngine();
+const chainOfThoughtEngine = new ChainOfThoughtPromptEngine();
 
 export async function chatWithAI(userMessage, options = {}) {
   try {
     // Choose prompting strategy based on options
     let promptResult;
 
-    if (options.promptingStrategy === 'multi-shot') {
+    if (options.promptingStrategy === 'chain-of-thought') {
+      // Use chain of thought prompting with explicit reasoning
+      promptResult = chainOfThoughtEngine.generatePrompt(userMessage, options);
+    } else if (options.promptingStrategy === 'multi-shot') {
       // Use multi-shot prompting with multiple examples
       promptResult = multiShotEngine.generatePrompt(userMessage, options);
     } else if (options.promptingStrategy === 'one-shot') {
@@ -70,6 +75,11 @@ export async function chatWithAI(userMessage, options = {}) {
     console.error("Gemini API Error:", error);
     throw error;
   }
+}
+
+// Chain of thought prompting specific function
+export async function chatWithAIChainOfThought(userMessage, options = {}) {
+  return chatWithAI(userMessage, { ...options, promptingStrategy: 'chain-of-thought' });
 }
 
 // Multi-shot prompting specific function

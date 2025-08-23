@@ -7,6 +7,7 @@ import { GoogleGenAI } from "@google/genai";
 import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
 import { OneShotPromptEngine } from "../services/one-shot-prompting.js";
 import { MultiShotPromptEngine } from "../services/multi-shot-prompting.js";
+import { ChainOfThoughtPromptEngine } from "../services/chain-of-thought-prompting.js";
 import dotenv from "dotenv";
 import fs from 'fs/promises';
 import path from 'path';
@@ -29,6 +30,7 @@ class RTFCFramework {
     this.zeroShotEngine = new ZeroShotPromptEngine();
     this.oneShotEngine = new OneShotPromptEngine();
     this.multiShotEngine = new MultiShotPromptEngine();
+    this.chainOfThoughtEngine = new ChainOfThoughtPromptEngine();
 
     // Initialize built-in tools
     this.initializeTools();
@@ -257,7 +259,10 @@ class RTFCFramework {
     // Choose prompting strategy based on options
     let promptResult;
 
-    if (options.promptingStrategy === 'multi-shot') {
+    if (options.promptingStrategy === 'chain-of-thought') {
+      // Use chain of thought prompting with explicit reasoning
+      promptResult = this.chainOfThoughtEngine.generatePrompt(userMessage, options);
+    } else if (options.promptingStrategy === 'multi-shot') {
       // Use multi-shot prompting with multiple examples
       promptResult = this.multiShotEngine.generatePrompt(userMessage, options);
     } else if (options.promptingStrategy === 'one-shot') {

@@ -1,14 +1,16 @@
 import express from "express";
-import { chatWithAI, chatWithAIOneShot, chatWithAIMultiShot } from "../services/gemini.js";
+import { chatWithAI, chatWithAIOneShot, chatWithAIMultiShot, chatWithAIChainOfThought } from "../services/gemini.js";
 import { chatWithAI as rtfcChatWithAI, chatWithAIDetailed } from "../services/rtfc-gemini.js";
 import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
 import { OneShotPromptEngine } from "../services/one-shot-prompting.js";
 import { MultiShotPromptEngine } from "../services/multi-shot-prompting.js";
+import { ChainOfThoughtPromptEngine } from "../services/chain-of-thought-prompting.js";
 
 const router = express.Router();
 const zeroShotEngine = new ZeroShotPromptEngine();
 const oneShotEngine = new OneShotPromptEngine();
 const multiShotEngine = new MultiShotPromptEngine();
+const chainOfThoughtEngine = new ChainOfThoughtPromptEngine();
 
 // POST /chat - Standard chat with intelligent prompting
 router.post("/", async (req, res) => {
@@ -19,17 +21,20 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Support zero-shot, one-shot, and multi-shot prompting options
+    // Support all prompting strategies
     const promptOptions = {
       promptType: options.promptType,
       level: options.level,
       taskType: options.taskType,
       maxExamples: options.maxExamples,
+      reasoningDepth: options.reasoningDepth,
       promptingStrategy: options.promptingStrategy || 'zero-shot' // default to zero-shot
     };
 
     let response;
-    if (promptOptions.promptingStrategy === 'multi-shot') {
+    if (promptOptions.promptingStrategy === 'chain-of-thought') {
+      response = await chatWithAIChainOfThought(message, promptOptions);
+    } else if (promptOptions.promptingStrategy === 'multi-shot') {
       response = await chatWithAIMultiShot(message, promptOptions);
     } else if (promptOptions.promptingStrategy === 'one-shot') {
       response = await chatWithAIOneShot(message, promptOptions);
@@ -294,7 +299,64 @@ router.post("/multi-shot", async (req, res) => {
   }
 });
 
-// POST /chat/compare - Compare zero-shot vs one-shot vs multi-shot responses
+// POST /chat/chain-of-thought - Chain of thought prompting with explicit reasoning
+router.post("/chain-of-thought", async (req, res) => {
+  try {
+    const { message, promptType, level, taskType, reasoningDepth, showReasoning } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    const options = {};
+    if (promptType) options.promptType = promptType;
+    if (level) options.level = level;
+    if (reasoningDepth) options.reasoningDepth = reasoningDepth;
+
+    let finalMessage = message;
+    let promptAnalysis = null;
+
+    // Use task-specific reasoning if specified
+    if (taskType) {
+      const taskPrompt = chainOfThoughtEngine.generateTaskSpecificPrompt(taskType, message, options);
+      finalMessage = taskPrompt.enhancedUserMessage;
+      promptAnalysis = {
+        originalMessage: message,
+        enhancedMessage: finalMessage,
+        analysisType: taskPrompt.analysisType,
+        confidence: taskPrompt.confidence,
+        taskType,
+        reasoningType: taskPrompt.reasoningType,
+        example: showReasoning ? taskPrompt.example : null
+      };
+    } else {
+      // Regular chain of thought analysis
+      const analysis = chainOfThoughtEngine.generatePrompt(message, options);
+      promptAnalysis = {
+        originalMessage: message,
+        enhancedMessage: analysis.enhancedUserMessage,
+        analysisType: analysis.analysisType,
+        confidence: analysis.confidence,
+        reasoningType: analysis.reasoningType,
+        example: showReasoning ? analysis.example : null
+      };
+    }
+
+    const response = await chatWithAIChainOfThought(finalMessage, options);
+
+    res.json({
+      reply: response,
+      promptAnalysis,
+      options: { promptType, level, taskType, reasoningDepth },
+      promptingStrategy: 'chain-of-thought'
+    });
+  } catch (error) {
+    console.error("Error in /chat/chain-of-thought:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+// POST /chat/compare - Compare all prompting strategies
 router.post("/compare", async (req, res) => {
   try {
     const { message, promptType, level } = req.body;
@@ -307,17 +369,19 @@ router.post("/compare", async (req, res) => {
     if (promptType) options.promptType = promptType;
     if (level) options.level = level;
 
-    // Get all three responses
-    const [zeroShotResponse, oneShotResponse, multiShotResponse] = await Promise.all([
+    // Get all four responses
+    const [zeroShotResponse, oneShotResponse, multiShotResponse, chainOfThoughtResponse] = await Promise.all([
       chatWithAI(message, options),
       chatWithAIOneShot(message, options),
-      chatWithAIMultiShot(message, { ...options, maxExamples: 3 })
+      chatWithAIMultiShot(message, { ...options, maxExamples: 3 }),
+      chatWithAIChainOfThought(message, { ...options, reasoningDepth: 'moderate' })
     ]);
 
     // Get analysis from all engines
     const zeroShotAnalysis = zeroShotEngine.generatePrompt(message, options);
     const oneShotAnalysis = oneShotEngine.generatePrompt(message, options);
     const multiShotAnalysis = multiShotEngine.generatePrompt(message, { ...options, maxExamples: 3 });
+    const chainOfThoughtAnalysis = chainOfThoughtEngine.generatePrompt(message, { ...options, reasoningDepth: 'moderate' });
 
     res.json({
       message,
@@ -345,6 +409,15 @@ router.post("/compare", async (req, res) => {
           confidence: multiShotAnalysis.confidence,
           strategy: 'multi-shot',
           exampleCount: multiShotAnalysis.exampleCount
+        }
+      },
+      chainOfThought: {
+        response: chainOfThoughtResponse,
+        analysis: {
+          type: chainOfThoughtAnalysis.analysisType,
+          confidence: chainOfThoughtAnalysis.confidence,
+          strategy: 'chain-of-thought',
+          reasoningType: chainOfThoughtAnalysis.reasoningType
         }
       },
       options
