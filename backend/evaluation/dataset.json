@@ -1,0 +1,225 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2024-01-15",
+    "description": "Evaluation dataset for Smart Study Assistant prompting strategies",
+    "total_samples": 10,
+    "subjects": ["math", "science", "history", "programming", "language"],
+    "strategies": ["zero-shot", "one-shot", "multi-shot", "chain-of-thought"]
+  },
+  "test_cases": [
+    {
+      "id": "math_001",
+      "subject": "math",
+      "difficulty": "intermediate",
+      "question": "Solve the quadratic equation: x² - 5x + 6 = 0",
+      "expected_answer": {
+        "solution": "x = 2 or x = 3",
+        "method": "factoring",
+        "steps": [
+          "Factor the quadratic: (x - 2)(x - 3) = 0",
+          "Set each factor to zero: x - 2 = 0 or x - 3 = 0",
+          "Solve: x = 2 or x = 3",
+          "Verify by substitution"
+        ]
+      },
+      "evaluation_criteria": {
+        "accuracy": "Must provide correct solutions x = 2 and x = 3",
+        "method": "Should show factoring or quadratic formula approach",
+        "steps": "Must show step-by-step solution process",
+        "verification": "Should verify the answer by substitution"
+      },
+      "tags": ["algebra", "quadratic", "factoring"]
+    },
+    {
+      "id": "science_001",
+      "subject": "science",
+      "difficulty": "beginner",
+      "question": "Why do objects fall at the same rate in a vacuum regardless of their mass?",
+      "expected_answer": {
+        "concept": "gravitational acceleration independence from mass",
+        "explanation": "In a vacuum, all objects fall at the same rate because gravitational acceleration (g) is independent of mass. While heavier objects experience more gravitational force, they also have more inertia to overcome, and these effects cancel out exactly.",
+        "physics_principle": "Newton's second law: F = ma, where F = mg, so a = g",
+        "evidence": "Apollo 15 hammer and feather experiment on the Moon"
+      },
+      "evaluation_criteria": {
+        "accuracy": "Must explain that acceleration is independent of mass",
+        "physics": "Should reference Newton's laws or F = ma relationship",
+        "evidence": "Should provide real-world examples or experiments",
+        "clarity": "Explanation should be clear and accessible"
+      },
+      "tags": ["physics", "gravity", "acceleration", "Newton"]
+    },
+    {
+      "id": "history_001",
+      "subject": "history",
+      "difficulty": "intermediate",
+      "question": "What were the main causes of World War I?",
+      "expected_answer": {
+        "main_causes": ["Militarism", "Alliance system", "Imperialism", "Nationalism"],
+        "trigger_event": "Assassination of Archduke Franz Ferdinand",
+        "explanation": "WWI resulted from long-term tensions (MAIN factors) that created a volatile situation, triggered by the assassination in Sarajevo",
+        "timeline": "June 28, 1914: Assassination → July-August 1914: War declarations"
+      },
+      "evaluation_criteria": {
+        "completeness": "Must mention MAIN factors (Militarism, Alliance, Imperialism, Nationalism)",
+        "trigger": "Should identify the assassination as the immediate trigger",
+        "context": "Should explain how long-term and short-term causes combined",
+        "accuracy": "Historical facts and dates should be correct"
+      },
+      "tags": ["WWI", "causes", "MAIN", "assassination"]
+    },
+    {
+      "id": "programming_001",
+      "subject": "programming",
+      "difficulty": "beginner",
+      "question": "Write a Python function to reverse a string",
+      "expected_answer": {
+        "function": "def reverse_string(text): return text[::-1]",
+        "explanation": "Uses Python slicing with step -1 to reverse the string",
+        "alternatives": ["Loop method", "reversed() function", "recursion"],
+        "example": "reverse_string('hello') returns 'olleh'"
+      },
+      "evaluation_criteria": {
+        "correctness": "Function must correctly reverse strings",
+        "pythonic": "Should use idiomatic Python (slicing preferred)",
+        "explanation": "Should explain how the solution works",
+        "examples": "Should provide usage examples"
+      },
+      "tags": ["python", "string", "slicing", "function"]
+    },
+    {
+      "id": "language_001",
+      "subject": "language",
+      "difficulty": "intermediate",
+      "question": "What's the difference between 'who' and 'whom'?",
+      "expected_answer": {
+        "rule": "Who is subject (performs action), whom is object (receives action)",
+        "test": "Replace with he/him - if 'he' fits use 'who', if 'him' fits use 'whom'",
+        "examples": [
+          "Who is calling? (He is calling)",
+          "Whom did you see? (You saw him)"
+        ],
+        "modern_usage": "In casual speech, 'who' is often acceptable, but formal writing maintains distinction"
+      },
+      "evaluation_criteria": {
+        "accuracy": "Must correctly explain subject vs object distinction",
+        "test_method": "Should provide the he/him substitution test",
+        "examples": "Must include correct examples of both uses",
+        "context": "Should mention formal vs casual usage"
+      },
+      "tags": ["grammar", "pronouns", "who", "whom"]
+    },
+    {
+      "id": "math_002",
+      "subject": "math",
+      "difficulty": "advanced",
+      "question": "A train travels 120 miles in 2 hours, then speeds up and travels 180 miles in the next 1.5 hours. What is its average speed for the entire journey?",
+      "expected_answer": {
+        "solution": "85.71 mph",
+        "method": "Average speed = Total distance ÷ Total time",
+        "calculation": [
+          "Total distance: 120 + 180 = 300 miles",
+          "Total time: 2 + 1.5 = 3.5 hours",
+          "Average speed: 300 ÷ 3.5 = 85.71 mph"
+        ],
+        "verification": "Speed is between the two segment speeds (60 mph and 120 mph)"
+      },
+      "evaluation_criteria": {
+        "accuracy": "Must calculate 85.71 mph (or equivalent fraction)",
+        "method": "Should use total distance/total time formula",
+        "steps": "Must show clear calculation steps",
+        "reasoning": "Should explain why this method is correct"
+      },
+      "tags": ["average", "speed", "distance", "time"]
+    },
+    {
+      "id": "science_002",
+      "subject": "science",
+      "difficulty": "intermediate",
+      "question": "How does photosynthesis work?",
+      "expected_answer": {
+        "process": "Plants convert light energy into chemical energy (glucose) using CO2 and water",
+        "equation": "6CO2 + 6H2O + light energy → C6H12O6 + 6O2",
+        "stages": [
+          "Light reactions: Capture light energy, split water, produce ATP/NADPH",
+          "Calvin cycle: Use ATP/NADPH to fix CO2 into glucose"
+        ],
+        "importance": "Provides oxygen and forms base of food chains"
+      },
+      "evaluation_criteria": {
+        "accuracy": "Must correctly describe the overall process",
+        "equation": "Should include the chemical equation",
+        "stages": "Should mention light reactions and Calvin cycle",
+        "significance": "Should explain importance for life on Earth"
+      },
+      "tags": ["photosynthesis", "plants", "energy", "glucose"]
+    },
+    {
+      "id": "programming_002",
+      "subject": "programming",
+      "difficulty": "intermediate",
+      "question": "Explain how APIs work with a simple example",
+      "expected_answer": {
+        "definition": "API is a set of rules for software applications to communicate",
+        "concept": "Request-response cycle between client and server",
+        "http_methods": ["GET (retrieve)", "POST (create)", "PUT (update)", "DELETE (remove)"],
+        "example": "Weather API: GET request to fetch weather data, returns JSON response",
+        "benefits": ["Modularity", "Reusability", "Standardization"]
+      },
+      "evaluation_criteria": {
+        "definition": "Must explain what an API is",
+        "concept": "Should describe request-response pattern",
+        "example": "Must provide a concrete, understandable example",
+        "benefits": "Should mention advantages of using APIs"
+      },
+      "tags": ["API", "HTTP", "request", "response", "JSON"]
+    },
+    {
+      "id": "logic_001",
+      "subject": "logic",
+      "difficulty": "intermediate",
+      "question": "All birds can fly. Penguins are birds. Therefore, penguins can fly. What's wrong with this argument?",
+      "expected_answer": {
+        "structure": "Valid syllogistic form but unsound argument",
+        "problem": "Major premise 'All birds can fly' is false",
+        "counterexamples": ["Penguins", "Ostriches", "Emus", "Kiwis"],
+        "distinction": "Logical validity (correct form) vs soundness (true premises)",
+        "conclusion": "Valid structure cannot produce true conclusion from false premises"
+      },
+      "evaluation_criteria": {
+        "identification": "Must identify the false premise",
+        "examples": "Should provide counterexamples to 'all birds can fly'",
+        "logic": "Should distinguish between validity and soundness",
+        "explanation": "Must explain why the argument fails"
+      },
+      "tags": ["logic", "syllogism", "validity", "soundness", "premises"]
+    },
+    {
+      "id": "problem_solving_001",
+      "subject": "problem_solving",
+      "difficulty": "intermediate",
+      "question": "You have a 3-gallon jug and a 5-gallon jug. How can you measure exactly 4 gallons of water?",
+      "expected_answer": {
+        "strategy": "Use the jugs to create a 1-gallon difference, then subtract from 5 gallons",
+        "steps": [
+          "Fill 5-gallon jug",
+          "Pour into 3-gallon jug (leaves 2 gallons in 5-gallon)",
+          "Empty 3-gallon jug",
+          "Pour 2 gallons from 5-gallon into 3-gallon",
+          "Fill 5-gallon jug again",
+          "Pour from 5-gallon into 3-gallon (which has 2, so only 1 more fits)",
+          "4 gallons remain in 5-gallon jug"
+        ],
+        "principle": "Create intermediate measurements to reach target"
+      },
+      "evaluation_criteria": {
+        "solution": "Must provide a working method to measure 4 gallons",
+        "steps": "Should show clear step-by-step process",
+        "reasoning": "Should explain the logic behind the approach",
+        "verification": "Should confirm the final result is 4 gallons"
+      },
+      "tags": ["puzzle", "measurement", "problem-solving", "logic"]
+    }
+  ]
+}
