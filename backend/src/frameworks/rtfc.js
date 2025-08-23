@@ -8,6 +8,7 @@ import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
 import { OneShotPromptEngine } from "../services/one-shot-prompting.js";
 import { MultiShotPromptEngine } from "../services/multi-shot-prompting.js";
 import { ChainOfThoughtPromptEngine } from "../services/chain-of-thought-prompting.js";
+import { logTokenUsage } from "../utils/token-tracker.js";
 import dotenv from "dotenv";
 import fs from 'fs/promises';
 import path from 'path';
@@ -316,6 +317,16 @@ class RTFCFramework {
           thinkingBudget: 0,
         },
       },
+    });
+
+    // Log token usage information for RTFC with enhanced tracking
+    const strategy = options.promptingStrategy || 'zero-shot';
+    logTokenUsage('RTFC Framework', response.usageMetadata, {
+      strategy: strategy,
+      subject: options.promptType,
+      level: options.level,
+      tools: toolResults.length > 0 ? 'used' : 'none',
+      knowledge: retrievedKnowledge ? 'retrieved' : 'none'
     });
 
     // Clean up the response

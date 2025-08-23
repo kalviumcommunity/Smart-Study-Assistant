@@ -4,6 +4,7 @@
  */
 
 import { chatWithAI } from "../src/services/gemini.js";
+import { logTokenUsage } from "../src/utils/token-tracker.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -122,10 +123,13 @@ Be thorough, fair, and constructive in your evaluation. Focus on educational eff
       const judgePrompt = this.generateJudgePrompt(testCase, modelResponse, strategy);
       
       // Get evaluation from AI judge
+      console.log(`🤖 Evaluating ${testCase.id} with AI judge...`);
       const judgeResponse = await chatWithAI(judgePrompt, {
         promptingStrategy: 'zero-shot',
         temperature: 0.1 // Low temperature for consistent evaluation
       });
+
+      // Note: Token usage is automatically logged by the Gemini service
 
       // Parse the JSON response
       let evaluation;

@@ -6,6 +6,7 @@
 
 import { EvaluationTestRunner } from "./evaluation/test-runner.js";
 import { AIJudge } from "./evaluation/judge.js";
+import { printTokenSummary } from "./src/utils/token-tracker.js";
 import fs from 'fs/promises';
 import dotenv from "dotenv";
 
@@ -219,7 +220,7 @@ async function main() {
     
     console.log("\n✅ Evaluation completed successfully!");
     console.log(`📊 Check the results in: ${options.outputDir}`);
-    
+
     // Show quick stats
     const stats = evaluationReport.aggregate_stats;
     if (stats && stats.average_scores) {
@@ -229,6 +230,9 @@ async function main() {
         .sort((a, b) => b[1].average_score - a[1].average_score)[0][0]}`);
       console.log(`Tests Completed: ${evaluationReport.metadata.evaluated_tests}/${evaluationReport.metadata.total_tests}`);
     }
+
+    // Print token usage summary
+    printTokenSummary();
     
   } catch (error) {
     console.error("\n❌ Evaluation failed:", error.message);

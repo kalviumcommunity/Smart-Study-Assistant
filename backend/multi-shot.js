@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { chatWithAI } from "./src/services/gemini.js";
 import { MultiShotPromptEngine } from "./src/services/multi-shot-prompting.js";
+import { printTokenSummary } from "./src/utils/token-tracker.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -205,7 +206,11 @@ try {
   const answer = await chatWithAI(finalQuestion, options);
   console.log("🤖 Answer:");
   console.log(answer);
-  
+
+  // Print token usage summary
+  console.log();
+  printTokenSummary();
+
 } catch (error) {
   console.error("❌ Error:", error.message);
   
