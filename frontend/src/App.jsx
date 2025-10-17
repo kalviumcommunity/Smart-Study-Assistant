@@ -6,6 +6,7 @@ import ZeroShotPrompt from './components/ZeroShotPrompt'
 import OneShotPrompt from './components/OneShotPrompt'
 import MultiShotPrompt from './components/MultiShotPrompt'
 import ChainOfThoughtPrompt from './components/ChainOfThoughtPrompt'
+import FlashcardGenerator from './components/FlashcardGenerator'
 
 function App() {
   const [activeTab, setActiveTab] = useState('zero-shot')
@@ -20,6 +21,8 @@ function App() {
         return <MultiShotPrompt />
       case 'chain-of-thought':
         return <ChainOfThoughtPrompt />
+      case 'flashcards':
+        return <FlashcardGenerator />
       default:
         return <ZeroShotPrompt />
     }

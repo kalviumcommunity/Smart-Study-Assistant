@@ -5,7 +5,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'zero-shot', label: 'Zero-Shot Prompting' },
     { id: 'one-shot', label: 'One-Shot Prompting' },
     { id: 'multi-shot', label: 'Multi-Shot Prompting' },
-    { id: 'chain-of-thought', label: 'Chain of Thought' }
+    { id: 'chain-of-thought', label: 'Chain of Thought' },
+    { id: 'flashcards', label: 'Flashcards' }
   ]
 
   return (
