@@ -24,13 +24,14 @@ A personalized AI-powered tutor that intelligently adapts to any question using 
 
 | Layer                | Tools Used |
 |---------------------|------------|
-| ⚙️ Backend           | |
-| 📄 Document Parsing |  |
-| 🧠 Language Model    |  |
-| 🔍 Vector DB         |  |
+| ⚙️ Backend           | Node.js, Express.js, JavaScript (ES Modules) |
+| 📄 Document Parsing | JavaScript parsing utilities |
+| 🧠 Language Model    | Google Gemini API (@google/genai) |
+| 🔍 Vector DB         | In-memory context management |
 | 🎯 Structured Output | JSON schemas for flashcards, summaries, quizzes |
 | 🧠 Function Calling  | Reminder APIs, quiz generation, schedule builder |
 | 🌐 Frontend (optional) | React.js + Tailwind CSS or Postman/Bruno for API demo |
+| 🔧 Prompting Strategies | Zero-Shot, One-Shot, Multi-Shot, Chain-of-Thought |
 
 ---
 
