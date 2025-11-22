@@ -126,7 +126,13 @@ router.post("/zero-shot", async (req, res) => {
     });
   } catch (error) {
     console.error("Error in /chat/zero-shot:", error);
-    res.status(500).json({ error: "Something went wrong" });
+    console.error("Error details:", error.message);
+    console.error("Stack trace:", error.stack);
+    res.status(500).json({ 
+      error: "Something went wrong", 
+      details: error.message,
+      type: error.name 
+    });
   }
 });
 
