@@ -362,6 +362,61 @@ router.post("/chain-of-thought", async (req, res) => {
   }
 });
 
+// POST /chat/flashcards - Generate flashcards with structured output
+router.post("/flashcards", async (req, res) => {
+  try {
+    const { topic, count = 5 } = req.body;
+
+    if (!topic) {
+      return res.status(400).json({ error: "Topic is required" });
+    }
+
+    const prompt = `Generate exactly ${count} flashcards about "${topic}". Return ONLY a valid JSON array with this exact format:
+[
+  {"front": "Question 1", "back": "Answer 1"},
+  {"front": "Question 2", "back": "Answer 2"}
+]
+
+Rules:
+- Each question should test understanding of ${topic}
+- Answers should be clear and educational
+- Return ONLY the JSON array, no other text
+- Make sure JSON is valid and parseable`;
+
+    const response = await chatWithAI(prompt, { promptType: 'general_study' });
+
+    // Try to extract and parse JSON
+    let flashcards = [];
+    try {
+      // Look for JSON array in the response
+      const jsonMatch = response.match(/\[\s*\{[\s\S]*\}\s*\]/);
+      if (jsonMatch) {
+        flashcards = JSON.parse(jsonMatch[0]);
+      } else {
+        // Fallback: try to parse the entire response
+        flashcards = JSON.parse(response);
+      }
+    } catch (parseError) {
+      console.error('JSON parsing failed:', parseError);
+      // Return error with the raw response for debugging
+      return res.status(500).json({ 
+        error: "Failed to generate structured flashcards", 
+        rawResponse: response,
+        parseError: parseError.message 
+      });
+    }
+
+    res.json({
+      flashcards,
+      count: flashcards.length,
+      topic
+    });
+  } catch (error) {
+    console.error("Error in /chat/flashcards:", error);
+    res.status(500).json({ error: "Something went wrong", details: error.message });
+  }
+});
+
 // POST /chat/compare - Compare all prompting strategies
 router.post("/compare", async (req, res) => {
   try {
