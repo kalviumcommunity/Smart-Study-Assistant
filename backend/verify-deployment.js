@@ -17,7 +17,7 @@ try {
   if (process.env.GEMINI_API_KEY) {
     console.log('\n🧪 Testing API connection...');
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const result = await model.generateContent("Hello");
     console.log('API Test: OK ✅');
     console.log('Response preview:', result.response.text().substring(0, 50) + '...');

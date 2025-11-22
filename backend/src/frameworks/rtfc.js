@@ -300,7 +300,7 @@ class RTFCFramework {
 
     enhancedSystemPrompt += "\n\nUse this additional information to provide a comprehensive, accurate response. Integrate the tool results and knowledge naturally into your answer.";
 
-    const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
     const response = await model.generateContent([
       enhancedSystemPrompt,
       promptResult.enhancedUserMessage
