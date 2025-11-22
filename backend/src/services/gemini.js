@@ -36,7 +36,7 @@ export async function chatWithAI(userMessage, options = {}) {
 
     const { systemPrompt, enhancedUserMessage } = promptResult;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const response = await model.generateContent([
       systemPrompt,
       enhancedUserMessage
@@ -98,7 +98,7 @@ export async function chatWithAIZeroShot(userMessage, options = {}) {
 // Legacy function for backward compatibility
 export async function chatWithAIBasic(userMessage) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const response = await model.generateContent([
       "You are a helpful study assistant. Provide clear, concise, and well-formatted responses. Use simple formatting and avoid excessive markdown. Keep explanations friendly but not overly verbose.",
       userMessage
