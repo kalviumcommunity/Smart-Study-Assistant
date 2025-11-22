@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Use environment variable or fallback to localhost for development
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// Use environment variable or fallback to deployed backend
+const API_URL = import.meta.env.VITE_API_URL || 'https://smart-study-assistant-hfqr.onrender.com';
 
 // Add request interceptor for better error handling
 axios.interceptors.response.use(
