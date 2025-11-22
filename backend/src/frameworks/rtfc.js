@@ -3,7 +3,7 @@
  * A comprehensive framework for enhanced AI responses with external data retrieval and tool usage
  */
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ZeroShotPromptEngine } from "../services/zero-shot-prompting.js";
 import { OneShotPromptEngine } from "../services/one-shot-prompting.js";
 import { MultiShotPromptEngine } from "../services/multi-shot-prompting.js";
@@ -17,9 +17,7 @@ dotenv.config();
 
 class RTFCFramework {
   constructor() {
-    this.genAI = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    });
+    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     // Knowledge base for retrieval
     this.knowledgeBase = new Map();
@@ -302,35 +300,26 @@ class RTFCFramework {
 
     enhancedSystemPrompt += "\n\nUse this additional information to provide a comprehensive, accurate response. Integrate the tool results and knowledge naturally into your answer.";
 
-    const response = await this.genAI.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          parts: [
-            { text: enhancedSystemPrompt },
-            { text: promptResult.enhancedUserMessage }
-          ]
-        }
-      ],
-      config: {
-        thinkingConfig: {
-          thinkingBudget: 0,
-        },
-      },
-    });
+    const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await model.generateContent([
+      enhancedSystemPrompt,
+      promptResult.enhancedUserMessage
+    ]);
 
     // Log token usage information for RTFC with enhanced tracking
     const strategy = options.promptingStrategy || 'zero-shot';
-    logTokenUsage('RTFC Framework', response.usageMetadata, {
-      strategy: strategy,
-      subject: options.promptType,
-      level: options.level,
-      tools: toolResults.length > 0 ? 'used' : 'none',
-      knowledge: retrievedKnowledge ? 'retrieved' : 'none'
-    });
+    if (response.response?.usageMetadata) {
+      logTokenUsage('RTFC Framework', response.response.usageMetadata, {
+        strategy: strategy,
+        subject: options.promptType,
+        level: options.level,
+        tools: toolResults.length > 0 ? 'used' : 'none',
+        knowledge: retrievedKnowledge ? 'retrieved' : 'none'
+      });
+    }
 
     // Clean up the response
-    let cleanText = response.text
+    let cleanText = response.response.text()
       .replace(/\*\*\*([^*]+)\*\*\*/g, '$1')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1')

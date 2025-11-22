@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: smart-study-assistant-backend
+    env: node
+    buildCommand: npm install
+    startCommand: node src/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        sync: false

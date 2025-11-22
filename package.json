@@ -1,0 +1,13 @@
+{
+  "name": "smart-study-assistant",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "cd backend && npm install && node src/index.js",
+    "build": "cd backend && npm install",
+    "dev": "cd backend && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
