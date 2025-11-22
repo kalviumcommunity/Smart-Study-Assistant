@@ -1,23 +1,27 @@
 import React, { useState } from 'react'
 import { fetchZeroShot } from '../services/api'
 
-const ZeroShotPrompt = () => {
+const ZeroShotPrompt = ({ isLoading, setIsLoading }) => {
   const [prompt, setPrompt] = useState('')
   const [response, setResponse] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!prompt.trim()) return
 
-    setLoading(true)
+    setIsLoading(true)
+    setError('')
+    setResponse('')
+    
     try {
       const data = await fetchZeroShot(prompt)
       setResponse(data.response)
     } catch (error) {
-      setResponse('Error: Failed to get response. Please try again.')
+      console.error('Zero-shot error:', error)
+      setError('Failed to get response. Please check your connection and try again.')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -25,7 +29,7 @@ const ZeroShotPrompt = () => {
     <div className="prompt-container">
       <h2>Zero-Shot Prompting</h2>
       <p className="description">
-        Ask any question without providing examples. The AI will respond based on its knowledge.
+        🎯 Ask any question directly without examples. Perfect for quick answers, explanations, and general knowledge queries.
       </p>
       
       <form onSubmit={handleSubmit}>
@@ -41,17 +45,28 @@ const ZeroShotPrompt = () => {
         <button 
           type="submit" 
           className="submit-btn"
-          disabled={loading || !prompt.trim()}
+          disabled={isLoading || !prompt.trim()}
         >
-          {loading ? 'Processing...' : 'Submit'}
+          {isLoading ? (
+            <>
+              <span className="spinner"></span>
+              Processing...
+            </>
+          ) : (
+            'Ask AI 🤖'
+          )}
         </button>
       </form>
 
-      {loading && <div className="loading-spinner"></div>}
+      {error && (
+        <div className="error-message">
+          ⚠️ {error}
+        </div>
+      )}
       
       {response && (
         <div className="response-container">
-          <h3>Response:</h3>
+          <h3>🤖 AI Response:</h3>
           <div className="response-content">
             {response}
           </div>

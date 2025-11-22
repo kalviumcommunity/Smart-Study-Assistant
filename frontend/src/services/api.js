@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API_URL = 'https://smart-study-assistant-hfqr.onrender.com';
+// Use environment variable or fallback to localhost for development
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+// Add request interceptor for better error handling
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
 
 export const fetchZeroShot = async (prompt) => {
   try {

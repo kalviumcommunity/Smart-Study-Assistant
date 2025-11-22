@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 import { ZeroShotPromptEngine } from "./zero-shot-prompting.js";
 import { OneShotPromptEngine } from "./one-shot-prompting.js";
@@ -8,9 +8,7 @@ import { logTokenUsage } from "../utils/token-tracker.js";
 
 dotenv.config();
 
-const genAI = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const zeroShotEngine = new ZeroShotPromptEngine();
 const oneShotEngine = new OneShotPromptEngine();
@@ -38,33 +36,24 @@ export async function chatWithAI(userMessage, options = {}) {
 
     const { systemPrompt, enhancedUserMessage } = promptResult;
 
-    const response = await genAI.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          parts: [
-            { text: systemPrompt },
-            { text: enhancedUserMessage }
-          ]
-        }
-      ],
-      config: {
-        thinkingConfig: {
-          thinkingBudget: 0, // Disable thinking for faster responses
-        },
-      },
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await model.generateContent([
+      systemPrompt,
+      enhancedUserMessage
+    ]);
 
     // Log token usage information with enhanced tracking
     const strategy = options.promptingStrategy || 'zero-shot';
-    logTokenUsage('Gemini Service', response.usageMetadata, {
-      strategy: strategy,
-      subject: options.promptType,
-      level: options.level
-    });
+    if (response.response?.usageMetadata) {
+      logTokenUsage('Gemini Service', response.response.usageMetadata, {
+        strategy: strategy,
+        subject: options.promptType,
+        level: options.level
+      });
+    }
 
     // Clean up the response text for better readability
-    let cleanText = response.text;
+    let cleanText = response.response.text();
 
     // Remove excessive markdown formatting while preserving structure
     cleanText = cleanText
@@ -109,30 +98,21 @@ export async function chatWithAIZeroShot(userMessage, options = {}) {
 // Legacy function for backward compatibility
 export async function chatWithAIBasic(userMessage) {
   try {
-    const response = await genAI.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          parts: [
-            { text: "You are a helpful study assistant. Provide clear, concise, and well-formatted responses. Use simple formatting and avoid excessive markdown. Keep explanations friendly but not overly verbose." },
-            { text: userMessage }
-          ]
-        }
-      ],
-      config: {
-        thinkingConfig: {
-          thinkingBudget: 0,
-        },
-      },
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await model.generateContent([
+      "You are a helpful study assistant. Provide clear, concise, and well-formatted responses. Use simple formatting and avoid excessive markdown. Keep explanations friendly but not overly verbose.",
+      userMessage
+    ]);
 
     // Log token usage information with enhanced tracking
-    logTokenUsage('Gemini Basic', response.usageMetadata, {
-      strategy: 'basic',
-      context: 'legacy'
-    });
+    if (response.response?.usageMetadata) {
+      logTokenUsage('Gemini Basic', response.response.usageMetadata, {
+        strategy: 'basic',
+        context: 'legacy'
+      });
+    }
 
-    return response.text.trim();
+    return response.response.text().trim();
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw error;
