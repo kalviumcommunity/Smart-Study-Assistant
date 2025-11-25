@@ -54,7 +54,7 @@ The frontend will run on `http://localhost:5173`
 
 **Backend (.env):**
 ```
-GEMINI_API_KEY=AIzaSyAviz-EAdTFVdbIEdaQpSgB5geWjgzs31M
+GEMINI_API_KEY=API_key
 ```
 
 **Frontend (.env):**
